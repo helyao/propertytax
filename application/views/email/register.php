@@ -18,7 +18,7 @@
     <p>We received an account request on <a href="http://www.payfairtax.com">www.payfairtax.com</a> for your email address.</p>
     <p>To activate your account please visit the following link:</p>
     <br>
-    <a href="http://<?php echo $urlstring ?>"><?php echo $urlstring ?></a>
+    <a href="<?php echo $urlstring ?>"><?php echo $urlstring ?></a>
     <br>
     <p>If you do not want to open an account on <a href="http://www.payfairtax.com">www.payfairtax.com</a>, please ignore this email.</p>
     <p>Your information will then be deleted in a few days time.</p>

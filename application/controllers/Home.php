@@ -30,7 +30,10 @@ class Home extends CI_Controller {
 
     // Just for test, need delete when release version
     public function emailsuccess() {    // When sign-up email is sent successfully
-        $this->load->view('login/emailsuccess', array('email' => 'helyao@qq.com'));
+//        $username = $this->input->post('hidusernm');
+//        $password = $this->input->post('hidpasswd');
+        $email = $this->input->post('hidemail');
+        $this->load->view('login/emailsuccess', array('email' => $email));
     }
 
     // ------ APIs ------
@@ -94,10 +97,10 @@ class Home extends CI_Controller {
         $this->Auth_model->insertNewUser($userinfo);
         # Step3: Insert Verification Information
         $verifyStr = '';
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         for ($i = 0; $i < 32; $i++) {
-            $verifyStr .= chr(mt_rand(32, 126));
+            $verifyStr .= $chars[mt_rand(0, (strlen($chars)-1))];
         }
-        $verifyStr = urlencode($verifyStr);
         $nowstamp = new DateTime();
         $verifyinfo = array(
             'email' => $email,
@@ -109,22 +112,36 @@ class Home extends CI_Controller {
         $flagEmail = $this->Email_model->signupEmail($email, $verifyStr);
         if ($flagEmail) {
             // Email sent successfully
-            // echo 'Email has been sent, please login your email to verify.';
-            // $emailaddr = 'mail.'.explode('@', $email)[1];
-            $this->load->view('login/emailsuccess', array('email' => $email));
+            echo true;
         }
         else {
             // Email sent failed
-            // $this->load->view('login/emailfailed');
-            // echo 'Email sent failed.';
+            echo false;
         }
+    }
+
+
+    // Just for test
+    public function test() {
+        $this->load->helper(array('form', 'url'));
+        $username = $_POST['name'];
+        $password = $_POST['password'];
+        $email = $_POST['email'];
+        echo 'email = '.urldecode($email).' & username = '.$username.' & password = '.$password;
     }
 
     // Used for verify sign-up Email
     public function checklink() {
-        $email = $_GET['email'];
+        $this->load->model('Auth_model');
+        $email = urldecode($_GET['email']);
         $verify = $_GET['verify'];
-        echo 'email = '.urldecode($email).' & verify = '.$verify;
+        echo 'email = '.$email.' & verify = '.$verify;
+        if ($this->Auth_model->logupVerifyCheck($email, $verify)) {
+            echo 'success';
+        }
+        else {
+            echo 'failed';
+        }
     }
 
 }

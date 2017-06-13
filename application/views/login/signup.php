@@ -143,7 +143,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
-            <form id="form" action="#" class="login-form animate-box" data-animate-effect="fadeIn">
+<!--            <form method="post" id="form" action="/texas/index.php/home/test" class="login-form animate-box" data-animate-effect="fadeIn">-->
+            <form class="login-form animate-box" data-animate-effect="fadeIn">
                 <h2>Sign Up</h2>
                 <div class="form-group">
                     <div id="show-error" class="alert alert-danger" role="alert"></div>
@@ -171,8 +172,14 @@
                     <p>Already registered? <a href="/texas/index.php/home/login">Sign In</a></p>
                 </div>
                 <div class="form-group">
-                    <input type="submit" id="submit" value="Sign Up" class="btn btn-primary">
+                    <input type="button" id="submit" value="Sign Up" class="btn btn-primary">
                 </div>
+            </form>
+            <form method="post" id="emailjump" style="visibility: hidden" action="/texas/index.php/home/emailsuccess">
+                <input type="text" id="hidusernm" name="hidusernm">
+                <input type="text" id="hidpasswd" name="hidpasswd">
+                <input type="text" id="hidemail" name="hidemail">
+                <input type="submit" id="hidsubmit">
             </form>
         </div>
     </div>
@@ -407,8 +414,17 @@
                 verifyPasswdFunc();
                 verifyRePasswdFunc();
                 if (flagName && flagEmail && flagPasswd && flagRePasswd) {
+                    $('#hidusernm').val($('#name').val());
+                    $('#hidpasswd').val($('#password').val());
+                    $('#hidemail').val($('#email').val());
                     $.post("/texas/index.php/home/newuser", {username: $("#name").val(), email: $("#email").val(), password: $("#password").val()}, function (data) {
-                        console.log(data);
+                        if (data) {
+                            console.log('E-mail sent successfully.');
+                            $('#emailjump').submit();
+                        }
+                        else {
+                            console.log('E-mail sent failed.');
+                        }
                     });
                 }
                 else {

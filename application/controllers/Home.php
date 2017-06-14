@@ -28,12 +28,17 @@ class Home extends CI_Controller {
         $this->load->view('login/signup');
     }
 
-    // Just for test, need delete when release version
+    // email sent successfully
     public function emailsuccess() {    // When sign-up email is sent successfully
 //        $username = $this->input->post('hidusernm');
 //        $password = $this->input->post('hidpasswd');
         $email = $this->input->post('hidemail');
         $this->load->view('login/emailsuccess', array('email' => $email));
+    }
+
+    // reset password successfully
+    public function resetsuccess() {
+        $this->load->view('login/resetsuccess');
     }
 
     // ------ APIs ------
@@ -120,14 +125,51 @@ class Home extends CI_Controller {
         }
     }
 
-
-    // Just for test
-    public function test() {
-        $this->load->helper(array('form', 'url'));
-        $username = $_POST['name'];
-        $password = $_POST['password'];
+    // Get back user's password
+    public function resetPassword() {
+        $this->load->model('Auth_model');
+        $this->load->model('Email_model');
+        # Step1: Get form data
         $email = $_POST['email'];
-        echo 'email = '.urldecode($email).' & username = '.$username.' & password = '.$password;
+        # Step2: Insert Verification Information
+        $verifyStr = '';
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for ($i = 0; $i < 32; $i++) {
+            $verifyStr .= $chars[mt_rand(0, (strlen($chars)-1))];
+        }
+        $nowstamp = new DateTime();
+        $verifyinfo = array(
+            'email' => $email,
+            'create_on' => $nowstamp->format('Y-m-d H:i:s'),
+            'verify_string' => $verifyStr
+        );
+        $this->Auth_model->insertVerifyStr($verifyinfo);
+        # Step3: Send Verification Email and Jump to E-mail Sent Status page
+        $flagEmail = $this->Email_model->resetEmail($email, $verifyStr);
+        if ($flagEmail) {
+            // Email sent successfully
+            echo true;
+        }
+        else {
+            // Email sent failed
+            echo false;
+        }
+    }
+
+    // Set new password
+    public function newpasswd() {
+        $this->load->model('Auth_model');
+        # Step1: Get form data
+        $email = $_POST['email'];
+        $password = md5($_POST['password']);
+        $verify = $_POST['verify'];
+        # Step2: update password
+        if($this->Auth_model->updatePassword($email, $password, $verify)) {
+            echo true;
+        }
+        else {
+            echo false;
+        }
     }
 
     // Used for verify sign-up Email
@@ -135,13 +177,26 @@ class Home extends CI_Controller {
         $this->load->model('Auth_model');
         $email = urldecode($_GET['email']);
         $verify = $_GET['verify'];
-        echo 'email = '.$email.' & verify = '.$verify;
+//        echo 'email = '.$email.' & verify = '.$verify;
         if ($this->Auth_model->logupVerifyCheck($email, $verify)) {
-            echo 'success';
+            $this->load->view('login/verifysuccess');
         }
         else {
-            echo 'failed';
+            echo 'Failed, please retry it.';
         }
     }
 
+    // Used for verify reset password Email
+    public function resetlink() {
+        $this->load->model('Auth_model');
+        $email = urldecode($_GET['email']);
+        $verify = $_GET['verify'];
+        if ($this->Auth_model->resetVerifyCheck($email, $verify)) {
+            $username = $this->Auth_model->getUsername($email);
+            $this->load->view('login/resetpassword', array('username' => $username, 'email' => $email, 'verify' => $verify));
+        }
+        else {
+            echo 'Failed, please retry it.';
+        }
+    }
 }

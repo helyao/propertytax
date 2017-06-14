@@ -441,7 +441,7 @@
             verifyPasswd();
             verifyRePasswd();
             postFormSubmit();
-        })
+        });
     }());
 </script>
 </body>

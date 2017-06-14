@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: helyao
- * Date: 5/15/2017
- * Time: 2:16 PM
+ * Date: 6/14/2017
+ * Time: 1:48 PM
  */
 ?>
 
@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
-    <title>Forgot &mdash; PayFairTax</title>
+    <title>Reset &mdash; PayFairTax</title>
 
     <link rel="stylesheet" href="<?php echo site_url('../public/css/bootstrap.min.css'); ?>">
     <link rel="stylesheet" href="<?php echo site_url('../public/css/animate.css'); ?>">
@@ -135,33 +135,35 @@
         }
     </style>
 
-    <script src="<?php echo site_url('../public/js/modernizr.min.js'); ?>"></script>
-    <script src="<?php echo site_url('../public/js/respond.min.js'); ?>"></script>
+    <script src="/tax/public/js/modernizr.min.js"></script>
+    <script src="/tax/public/js/respond.min.js"></script>
 
 </head>
 <body>
 <div class="container">
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
-            <form action="#" class="login-form animate-box" data-animate-effect="fadeIn">
-                <h2>Forgot Password</h2>
+            <!--            <form method="post" id="form" action="/texas/index.php/home/test" class="login-form animate-box" data-animate-effect="fadeIn">-->
+            <form class="login-form animate-box" data-animate-effect="fadeIn">
+                <h2>Reset</h2>
                 <div class="form-group">
                     <div id="show-error" class="alert alert-danger" role="alert"></div>
                 </div>
                 <div class="form-group">
-                    <label for="email" class="sr-only">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Email" autocomplete="off">
+                    <label for="name" class="sr-only">Name</label>
+                    <input type="text" disabled class="form-control" id="name" placeholder="Name" value="<?php echo $username ?>" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <p><a href="/texas/index.php/home/login">Sign In</a> or <a href="/texas/index.php/home/signup">Sign Up</a></p>
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <input type="button" id="submit" value="Send Email" class="btn btn-primary">
+                    <label for="re-password" class="sr-only">Re-type Password</label>
+                    <input type="password" class="form-control" id="re-password" placeholder="Re-type Password" autocomplete="off">
                 </div>
-            </form>
-            <form method="post" id="emailjump" style="visibility: hidden" action="/texas/index.php/home/emailsuccess">
-                <input type="text" id="hidemail" name="hidemail">
-                <input type="submit" id="hidsubmit">
+                <div class="form-group">
+                    <input type="button" id="submit" value="Sure" class="btn btn-primary">
+                </div>
             </form>
         </div>
     </div>
@@ -173,7 +175,7 @@
 <script type="application/javascript" src="<?php echo site_url('../public/js/bootstrap.min.js'); ?>"></script>
 <script type="application/javascript" src="<?php echo site_url('../public/js/jquery.waypoints.min.js'); ?>"></script>
 <script type="application/javascript">
-    ;(function () {
+    ;(function() {
         'use strict';
 
         // add waypoint effection
@@ -205,82 +207,67 @@
             } , { offset: '85%' } );
         };
 
-        // E-mail Specification
-        var checkEmail = function (email) {
-            var reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
-            if (email.match(reg)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        };
-
-        // Check the email existed
-        var existEmail = function (email) {
-            var num = 0;
-            $.ajax({
-                type : 'get',
-                url : '/texas/index.php/home/uniqueEmail',
-                data : 'email='+email,
-                async : false,
-                success : function(res){
-                    num = parseInt(res);
-                }
-            });
-            if(num > 0) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        };
-
-        var flagEmail = false;
-        var verifyEmailFunc = function () {
-            var emailValue = $.trim($("#email").val());
-            if (emailValue == '') {
-                $("#show-error").text("The email field cannot be set none.");
+        // Password Specification
+        var flagPasswd = false;
+        var verifyPasswdFunc = function () {
+            var passwdValue = $.trim($("#password").val());
+            if (passwdValue == '') {
+                $("#show-error").text("The password field cannot be set none.");
                 $("#show-error").css("display", "block");
-                flagEmail = false;
+                flagPasswd = false;
             }
-            else if (emailValue.length > 320) {
-                $("#show-error").text("The email field must be at most 320 characters in length.");
+            else if (passwdValue.length < 6) {
+                $("#show-error").text("The password field must be at least 6 characters in length.");
                 $("#show-error").css("display", "block");
-                flagEmail = false;
+                flagPasswd = false;
             }
-            else if (!checkEmail(emailValue)) {
-                $("#show-error").text("Please enter the corrent email address.");
+            else if (passwdValue.length > 50) {
+                $("#show-error").text("The password field must be at most 50 characters in length.");
                 $("#show-error").css("display", "block");
-                flagEmail = false;
-            }
-            else if (!existEmail(emailValue)) {
-                $("#show-error").text("The email doesn't exist..");
-                $("#show-error").css("display", "block");
-                flagEmail = false;
+                flagPasswd = false;
             }
             else {
                 $("#show-error").css("display", "none");
-                flagEmail = true;
+                flagPasswd = true;
             }
         };
+        var verifyPasswd = function () {
+            $('#password').blur(function () {
+                verifyPasswdFunc();
+            });
+        };
 
-        var verifyEmail = function () {
-            $('#email').blur(function () {
-                verifyEmailFunc();
+        // Re-Password Specification
+        var flagRePasswd = false;
+        var verifyRePasswdFunc = function () {
+            var passwdValue = $.trim($("#password").val());
+            var rePasswdValue = $.trim($("#re-password").val());
+            if (passwdValue != rePasswdValue) {
+                $("#show-error").text("Twice passwords do not match.");
+                $("#show-error").css("display", "block");
+                flagRePasswd = false;
+            }
+            else {
+                $("#show-error").css("display", "none");
+                flagRePasswd = true;
+            }
+        };
+        var verifyRePasswd = function () {
+            $('#re-password').blur(function () {
+                verifyRePasswdFunc();
             });
         };
 
         // post form
         var postFormSubmit = function () {
             $('#submit').click(function () {
-                verifyEmailFunc();
-                if (flagEmail) {
-                    $('#hidemail').val($('#email').val());
-                    $.post("/texas/index.php/home/resetPassword", {email: $("#email").val()}, function (data) {
+                verifyPasswdFunc();
+                verifyRePasswdFunc();
+                if (flagPasswd && flagRePasswd) {
+                    $.post("/texas/index.php/home/newpasswd", {email: "<?php echo $email ?>", password: $("#password").val(), verify: "<?php echo $verify ?>"}, function (data) {
                         if (data) {
                             console.log('E-mail sent successfully.');
-                            $('#emailjump').submit();
+                            window.location.href = '/texas/index.php/home/resetsuccess';
                         }
                         else {
                             console.log('E-mail sent failed.');
@@ -295,10 +282,11 @@
 
         // Onload
         $(function () {
-            verifyEmail();
-            postFormSubmit();
             contentWayPoint();
-        })
+            verifyPasswd();
+            verifyRePasswd();
+            postFormSubmit();
+        });
     }());
 </script>
 </body>

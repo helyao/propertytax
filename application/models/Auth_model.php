@@ -90,4 +90,16 @@ class Auth_model extends CI_Model {
         }
     }
 
+    // Verify user login, if exist return
+    public function resolveUserLogin($username, $password) {
+        $exist = $this->db->select('count(*) as num')->from('tax_user')->where(array('username' => $username, 'password' => $password, 'verified' => 1))->get();
+        if ($exist->result()[0]->num > 0) {
+            $id = $this->db->select('id')->from('tax_user')->where(array('username' => $username, 'password' => $password))->get()->result()[0]->id;
+            return $id;
+        }
+        else {
+            return 0;
+        }
+    }
+
 }

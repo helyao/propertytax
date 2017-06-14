@@ -248,70 +248,83 @@
             }
         };
 
-        // username rules
+        // Username Rules
         var flagName = false;
+        var verifyNameFunc = function() {
+            var nameValue = $.trim($("#username").val());
+            if (nameValue == '') {
+                $("#show-error").text("The username field cannot be set none.");
+                $("#show-error").css("display", "block");
+                flagName = false;
+            }
+            else if (nameValue.length > 50) {
+                $("#show-error").text("The username field must be at most 50 characters in length.");
+                $("#show-error").css("display", "block");
+                flagName = false;
+            }
+            else if (!checkName(nameValue)) {
+                $("#show-error").text("Username only supports letters, numbers and underscores.");
+                $("#show-error").css("display", "block");
+                flagName = false;
+            }
+            else {
+                $("#show-error").css("display", "none");
+                flagName = true;
+            }
+        };
         var verifyName = function () {
             $('#username').blur(function () {
-                var nameValue = $.trim($("#username").val());
-                if (nameValue == '') {
-                    $("#show-error").text("The username field cannot be set none.");
-                    $("#show-error").css("display", "block");
-                    flagName = false;
-                }
-                else if (nameValue.length > 50) {
-                    $("#show-error").text("The username field must be at most 50 characters in length.");
-                    $("#show-error").css("display", "block");
-                    flagName = false;
-                }
-                else if (!checkName(nameValue)) {
-                    $("#show-error").text("Username only supports letters, numbers and underscores.");
-                    $("#show-error").css("display", "block");
-                    flagName = false;
-                }
-                else {
-                    $("#show-error").css("display", "none");
-                    flagName = true;
-                }
+                verifyNameFunc();
             });
         };
 
-        // password rules
-        var flagPass = false;
-        var verifyPass = function () {
+        // Password Specification
+        var flagPasswd = false;
+        var verifyPasswdFunc = function () {
+            var passwdValue = $.trim($("#password").val());
+            if (passwdValue == '') {
+                $("#show-error").text("The password field cannot be set none.");
+                $("#show-error").css("display", "block");
+                flagPasswd = false;
+            }
+            else if (passwdValue.length < 6) {
+                $("#show-error").text("The password field must be at least 6 characters in length.");
+                $("#show-error").css("display", "block");
+                flagPasswd = false;
+            }
+            else if (passwdValue.length > 50) {
+                $("#show-error").text("The password field must be at most 50 characters in length.");
+                $("#show-error").css("display", "block");
+                flagPasswd = false;
+            }
+            else {
+                $("#show-error").css("display", "none");
+                flagPasswd = true;
+            }
+        };
+        var verifyPasswd = function () {
             $('#password').blur(function () {
-                var passValue = $.trim($("#password").val());
-                if (passValue == '' || passValue.length > 50) {
-                    $("#show-error").text("Please enter a correct password.");
-                    $("#show-error").css("display", "block");
-                    flagPass = false;
-                }
-                else {
-                    $("#show-error").css("display", "none");
-                    flagPass = true;
-                }
-            })
+                verifyPasswdFunc();
+            });
         };
 
         // post form
         var postFormSubmit = function () {
             $('#submit').click(function () {
-                if (flagName && flagPass) {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "verify",
-                        data: $("#form").serialize(),
-                        success: function (data) {
-                            console.log(data);
+                verifyNameFunc();
+                verifyPasswdFunc();
+                if (flagName && flagPasswd) {
+                    $.post("/texas/index.php/home/userLogin", {username: $("#username").val(), password: $("#password").val()}, function (data) {
+                        if(data) {
+                            // success
+                            window.location.href = '/texas/index.php/home/';
+                        }
+                        else {
+                            // failed
+                            $("#show-error").text("Incorrect username or password.");
+                            $("#show-error").css("display", "block");
                         }
                     });
-
-                    $.post("verify", {username: $("#username").val(), password: $("#password").val()}, function (data) {
-                        console.log(data);
-                    });
-                }
-                else {
-                    $('#alert-modal').modal('show');
                 }
             });
         };
@@ -320,8 +333,10 @@
         $(function () {
             contentWayPoint();
             postFormSubmit();
+            verifyNameFunc();
+            verifyPasswdFunc();
             verifyName();
-            verifyPass();
+            verifyPasswd();
         })
     }());
 </script>

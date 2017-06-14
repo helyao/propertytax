@@ -53,7 +53,8 @@ class Home extends CI_Controller {
     }
 
     // user authentication
-    public function verify() {
+    public function userLogin() {
+        $this->load->model('Auth_model');
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
 
@@ -62,13 +63,31 @@ class Home extends CI_Controller {
 
         if (!$this->form_validation->run()) {
             // failed
-            echo validation_errors();
+//            echo validation_errors();
+            echo false;
         }
         else {
             // success
-            echo 'Username = '.$_POST['username'];
-            echo 'Password = '.$_POST['password'];
+            $username = $_POST['username'];
+            $password = md5($_POST['password']);
+
+            $userId = $this->Auth_model->resolveUserLogin($username, $password);
+
+            if ($userId > 0) {
+                $_SESSION['userid'] = (int)$userId;
+                $_SESSION['username'] = (string)$username;
+                $_SESSION['loggin'] = (bool)true;
+
+                echo true;
+            }
+            else {
+                echo false;
+            }
         }
+    }
+
+    public function test() {
+        echo 'username = '.$_SESSION['username'];
     }
 
     // username unique judge

@@ -14,7 +14,12 @@ class Home extends CI_Controller {
     // ------ Pages ------
     // main page
     public function index() {
-        $this->load->view('home/index');
+        if (isset($_SESSION['loggin']) && $_SESSION['loggin'] === true) {
+            $this->load->view('home/index', array('button' => 'logout'));
+        }
+        else {
+            $this->load->view('home/index', array('button' => 'login'));
+        }
     }
 
     // login, get back password, sign-up page
@@ -26,6 +31,19 @@ class Home extends CI_Controller {
     }
     public function signup() {      // Sign up
         $this->load->view('login/signup');
+    }
+
+    public function logout() {       // Logout
+        if (isset($_SESSION['loggin']) && $_SESSION['loggin'] === true) {
+            // remove session datas
+            foreach ($_SESSION as $key => $value) {
+                unset($_SESSION[$key]);
+            }
+            $this->load->view('home/index', array('button' => 'login'));
+
+        } else {
+            redirect('/texas/index.php/home/');
+        }
     }
 
     // email sent successfully

@@ -124,7 +124,7 @@
     var texasMapChart = function() {
         var myChart = echarts.init(document.getElementById('usa-map'));
         myChart.showLoading();
-        $.get('/tax/public/map/Texas_geo.json', function (texasJson) {
+        $.get('/texas/public/map/Texas_geo.json', function (texasJson) {
             myChart.hideLoading();
 
             echarts.registerMap('Texas', texasJson, {});

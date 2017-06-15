@@ -41,7 +41,7 @@
 <body>
 <div class="fh5co-loader" style="background: url(<?php echo site_url('../public/images/loader.gif'); ?>) center no-repeat #fff;"></div>
 <div id="page">
-    <?php $this->load->view("home/navbar") ?>
+    <?php $this->load->view("home/navbar", array("button" => $button)) ?>
     <?php $this->load->view("home/header") ?>
     <?php $this->load->view("home/detail") ?>
     <?php $this->load->view("home/step") ?>

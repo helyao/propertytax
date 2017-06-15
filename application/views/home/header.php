@@ -25,7 +25,7 @@
                                     </div>
                                 </div>
                             </form>
-                            <form style="display: none" action="result" method="POST" id="form">
+                            <form style="display: none" action="/texas/index.php/fairtax/result" method="POST" id="form">
                                 <input type="hidden" id="para1" name="para1" value=""/>
                             </form>
                         </div>

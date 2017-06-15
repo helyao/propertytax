@@ -19,7 +19,7 @@
                     <li><a href="#fh5co-core-feature">Detail</a></li>
                     <li><a href="#fh5co-services">Step</a></li>
                     <li><a href="#support-area">Support</a></li>
-                    <li class="btn-cta"><a href="/texas/index.php/home/login"><span>Login</span></a></li>
+                    <li class="btn-cta"><a href="/texas/index.php/home/<?php echo $button ?>"><span style="text-transform: capitalize"><?php echo $button ?></span></a></li>
                 </ul>
             </div>
         </div>
